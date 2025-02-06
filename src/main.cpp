@@ -23,11 +23,11 @@ LiquidCrystal_I2C lcd(0x27, 16, 2);
 int count = 0;
 void setup() {
 
-   pinMode(A0, OUTPUT);
-   pinMode(D0, OUTPUT);
+   pinMode(A0, INPUT);
+   pinMode(D0, INPUT);
    // pinMode(D1, OUTPUT); // D1 is used for I2C
    // pinMode(D2, OUTPUT); // D2 is used for I2C
-   pinMode(D3, OUTPUT);
+   pinMode(D3, INPUT);
    pinMode(D4, INPUT);
    pinMode(D5, OUTPUT);
    pinMode(D6, OUTPUT);
@@ -35,8 +35,6 @@ void setup() {
    pinMode(D8, OUTPUT);
    pinMode(LED_BUILTIN, OUTPUT);
 
-   digitalWrite(D0, LOW);
-   digitalWrite(D3, LOW);
    digitalWrite(D5, LOW);
    digitalWrite(D6, LOW);
    digitalWrite(D7, LOW);
