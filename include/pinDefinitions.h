@@ -8,8 +8,6 @@
    A0  // Watches for the physical button that turns the conveyor on
 #define PIN_IN_INCSPEED \
    D0                  // Watches for the physical button that increases speed
-#define PIN_IN_SCL D1  // SCL for the LCD
-#define PIN_IN_SDA D2  // SDA for the LCD
 #define PIN_IN_DECSPEED \
    D3  // Watches for the physical button that decreases speed
 #define PIN_IN_LOCALREMOTE \
@@ -19,6 +17,8 @@
 // ----------------------
 // OUTPUT PIN DEFINITIONS
 // ----------------------
+#define PIN_OUT_SCL D1  // SCL for the LCD
+#define PIN_OUT_SDA D2  // SDA for the LCD
 #define PIN_OUT_DECSPEED D5  // Controls the conveyor speed decrease
 #define PIN_OUT_ONOFF D6     // Controls the conveyor on/off
 #define PIN_OUT_LOCALREMOTE \

@@ -15,8 +15,9 @@ public:
   ConveyorController(const char* wifiNetworkName,
     const char* wifiNetworkPassword);
 
-  void configIO();
-  void configWeb();
+  void initIO();
+  void initLCD();
+  void initWeb();
   void assignRoutes();
   void startWebServer();
   void handleClient();

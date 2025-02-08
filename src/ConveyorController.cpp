@@ -7,16 +7,16 @@ ConveyorController::ConveyorController(const char* wifiNetworkName,
 }
 
 // Public access
-void ConveyorController::configIO() {
+void ConveyorController::initIO() {
    // Initialize input pins
    pinMode(PIN_IN_ONOFF, INPUT);
    pinMode(PIN_IN_INCSPEED, INPUT);
-   pinMode(PIN_IN_SCL, INPUT);
-   pinMode(PIN_IN_SDA, INPUT);
    pinMode(PIN_IN_DECSPEED, INPUT);
    pinMode(PIN_IN_LOCALREMOTE, INPUT);
 
    // Initialize output pins
+   pinMode(PIN_OUT_SCL, OUTPUT);
+   pinMode(PIN_OUT_SDA, OUTPUT);
    pinMode(PIN_OUT_DECSPEED, OUTPUT);
    pinMode(PIN_OUT_ONOFF, OUTPUT);
    pinMode(PIN_OUT_LOCALREMOTE, OUTPUT);
@@ -29,7 +29,18 @@ void ConveyorController::configIO() {
    digitalWrite(PIN_OUT_INCSPEED, LOW);
 }
 
-void ConveyorController::configWeb() {
+void ConveyorController::initLCD() {
+   // Initialize and set up the LCD
+   lcd.begin(16, 2);
+   lcd.init();
+   lcd.backlight();
+   lcd.setCursor(0, 0);
+   lcd.print("First line text");
+   lcd.setCursor(0, 1);
+   lcd.print("Second line text");
+}
+
+void ConveyorController::initWeb() {
 
    // Start serial communication
    Serial.begin(115200);
@@ -77,10 +88,7 @@ void ConveyorController::startWebServer() {
    webServer.begin();
    Serial.println("HTTP server started.");
 
-   // Initialize and set up the LCD
-   lcd.init();
-   lcd.backlight();
-   lcd.print("Robojax D1 Mini");
+
 }
 
 void ConveyorController::handleClient() { webServer.handleClient(); }

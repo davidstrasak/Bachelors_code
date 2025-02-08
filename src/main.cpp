@@ -10,8 +10,10 @@ void setup() {
 
    conveyorController =
       new ConveyorController(wifiNetworkName, wifiNetworkPassword);
-   conveyorController->configIO();
-   conveyorController->configWeb();
+
+   conveyorController->initIO();
+   conveyorController->initLCD();
+   conveyorController->initWeb();
    conveyorController->assignRoutes();
    conveyorController->startWebServer();
 }
