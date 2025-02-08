@@ -72,12 +72,40 @@ void ConveyorController::assignRoutes() {
       String response = "Sample route for multiple pages.";
       webServer.send(200, "text/plain", response);
       });
-   webServer.on("/ledON", [this]() {
-      Serial.println("Turning LED ON.");
+   webServer.on("/incSpeedOn", [this]() {
+      Serial.println("Increasing speed button pressed");
+      if (!localRemoteState) {
+         digitalWrite(PIN_OUT_INCSPEED, HIGH);
+      };
       mainRoute();
       });
-   webServer.on("/ledOFF", [this]() {
-      Serial.println("Turning LED OFF.");
+   webServer.on("/incSpeedOff", [this]() {
+      Serial.println("Increasing speed button released");
+      digitalWrite(PIN_OUT_INCSPEED, LOW);
+      mainRoute();
+      });
+   webServer.on("/decSpeedOn", [this]() {
+      Serial.println("Decreasing speed button pressed");
+      if (!localRemoteState) {
+         digitalWrite(PIN_OUT_DECSPEED, HIGH);
+      };
+      mainRoute();
+      });
+   webServer.on("/decSpeedOff", [this]() {
+      Serial.println("Decreasing speed button released");
+      digitalWrite(PIN_OUT_DECSPEED, LOW);
+      mainRoute();
+      });
+   webServer.on("/conveyorOn", [this]() {
+      Serial.println("Conveyor turned ON");
+      if (!localRemoteState) {
+         digitalWrite(PIN_OUT_ONOFF, HIGH);
+      };
+      mainRoute();
+      });
+   webServer.on("/conveyorOff", [this]() {
+      Serial.println("Conveyor turned OFF");
+      digitalWrite(PIN_OUT_ONOFF, LOW);
       mainRoute();
       });
    webServer.onNotFound([this]() { unknownRouteResponse(); });
@@ -138,11 +166,16 @@ void ConveyorController::mainRoute() {
    String response = "Hello Arduino World!<br>";
    response += "<br>Time since Arduino started: ";
    response += secondsSinceStart;
-   response += " seconds.<br><br>";
-   response += "LED status: ";
-   response += "<br><br>";
-   response += "<a href=\"/ledON\">Turn LED ON</a><br><br>";
-   response += "<a href=\"/ledOFF\">Turn LED OFF</a>";
+   response += " seconds.<br/><br/>";
+   response += "Local/Remote status: ";
+   response += (localRemoteState) ? "Local" : "Remote";
+   response += "<br/><br/>";
+   response += "<a href=\"/incSpeedOn\">Turn inc. speed ON</a>";
+   response += "<a href=\"/incSpeedOff\">Turn inc. speed OFF</a><br/><br/>";
+   response += "<a href=\"/decSpeedOn\">Turn dec. speed ON</a>";
+   response += "<a href=\"/decSpeedOff\">Turn dec. speed OFF</a><br/><br/>";
+   response += "<a href=\"/conveyorOn\">Turn conveyor ON</a>";
+   response += "<a href=\"/conveyorOff\">Turn conveyor OFF</a><br/><br/>";
 
    webServer.send(200, "text/html", response);
 }

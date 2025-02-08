@@ -20,8 +20,8 @@ void setup() {
 }
 
 void loop() {
-   conveyorController->handleClient();
    // Getting the state of buttons is handled by ticker
    // Updating LCD is handled by ticker
+   conveyorController->handleClient();
    delay(10);
 }
