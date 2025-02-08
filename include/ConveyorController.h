@@ -7,8 +7,9 @@
 #include <ESP8266mDNS.h>
 #include <LiquidCrystal_I2C.h>
 #include <WiFiClient.h>
-#include <Wire.h>
+// #include <Wire.h>
 #include "pinDefinitions.h"
+#include <Ticker.h>
 
 class ConveyorController {
 public:
@@ -20,6 +21,7 @@ public:
   void initWeb();
   void assignRoutes();
   void startWebServer();
+  void startTicker();
   void handleClient();
   void updateLCD();
   void updateState();
@@ -35,20 +37,27 @@ private:
   // LCD
   LiquidCrystal_I2C lcd = LiquidCrystal_I2C(0x27, 16, 2);
 
+  // Ticker
+  Ticker inputCheckingTicker;
+  Ticker LCDUpdatingTicker;
+
   // Speed of the conveyor
   int conveyorSpeed = 0;
 
   // TRUE or FALSE state if the conveyor is controlled locally or remotely
-  bool locRemState = false;
+  bool localRemoteState = false;
 
   // TRUE or FALSE state if the conveyor is speeding up or no
-  bool incSpeedState = false;
+  bool locIncSpeedState = false;
+  bool remIncSpeedState = false;
 
   // TRUE or FALSE state if the conveyor is slowing down or no
-  bool decSpeedState = false;
+  bool locDecSpeedState = false;
+  bool remDecSpeedState = false;
 
   // TRUE or FALSE state if the conveyor is ON or OFF
-  bool onOffState = false;
+  bool locOnOffState = false;
+  bool remOnOffState = false;
 
   // Route handler for the main page
   void mainRoute();

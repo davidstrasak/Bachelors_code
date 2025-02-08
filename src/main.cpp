@@ -16,11 +16,12 @@ void setup() {
    conveyorController->initWeb();
    conveyorController->assignRoutes();
    conveyorController->startWebServer();
+   conveyorController->startTicker();
 }
 
 void loop() {
-   conveyorController->updateState();
    conveyorController->handleClient();
-   conveyorController->updateLCD();
+   // Getting the state of buttons is handled by ticker
+   // Updating LCD is handled by ticker
    delay(10);
 }

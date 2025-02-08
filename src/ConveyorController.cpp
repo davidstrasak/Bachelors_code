@@ -34,7 +34,6 @@ void ConveyorController::initLCD() {
    lcd.begin(16, 2);
    lcd.init();
    lcd.backlight();
-   LCDWaitingForConnection();
 }
 
 void ConveyorController::initWeb() {
@@ -90,35 +89,50 @@ void ConveyorController::startWebServer() {
    Serial.println("HTTP server started.");
 }
 
+void ConveyorController::startTicker() {
+   inputCheckingTicker.attach(0.1, [this]() { updateState(); });
+   LCDUpdatingTicker.attach(1, [this]() { updateLCD(); });
+}
+
+// Repeatable public access
 void ConveyorController::handleClient() { webServer.handleClient(); }
 
 void ConveyorController::updateLCD() {
    lcd.clear();
+   lcd.setCursor(0, 0);
    lcd.print(WiFi.localIP());
    lcd.setCursor(0, 1);
    lcd.print("Speed:");
-   lcd.setCursor(9, 1);
+   lcd.setCursor(8, 1);
    lcd.print(String(conveyorSpeed) + " %");
-   conveyorSpeed++;
-   delay(200);
 }
 
 void ConveyorController::updateState() {
    // Read the state of the input pins
-   locRemState = digitalRead(PIN_IN_LOCALREMOTE);
-   if (locRemState == HIGH) {
-      onOffState = digitalRead(PIN_IN_ONOFF);
-      incSpeedState = digitalRead(PIN_IN_INCSPEED);
-      decSpeedState = digitalRead(PIN_IN_DECSPEED);
-   }
-   else {
-      onOffState = false;
-      incSpeedState = false;
-      decSpeedState = false;
+   localRemoteState = (digitalRead(PIN_IN_LOCALREMOTE) == HIGH);
+   if (localRemoteState) {
+      locOnOffState = (digitalRead(PIN_IN_ONOFF) == HIGH);
+      locIncSpeedState = (digitalRead(PIN_IN_INCSPEED) == HIGH);
+      locDecSpeedState = (digitalRead(PIN_IN_DECSPEED) == HIGH);
    }
 }
 
 // Private access
+void ConveyorController::LCDWaitingForConnection() {
+   lcd.clear();
+   lcd.setCursor(0, 0);
+   lcd.print("Waiting for");
+   lcd.setCursor(0, 1);
+   lcd.print("Hotspot:");
+   delay(1000);
+   lcd.clear();
+   lcd.setCursor(0, 0);
+   lcd.print(this->wifiNetworkName);
+   lcd.setCursor(0, 1);
+   lcd.print(this->wifiNetworkPassword);
+   delay(1000);
+}
+
 void ConveyorController::mainRoute() {
    String secondsSinceStart = String(millis() / 1000);
    String response = "Hello Arduino World!<br>";
@@ -147,20 +161,4 @@ void ConveyorController::unknownRouteResponse() {
    }
    webServer.send(404, "text/plain", response);
 }
-
-void ConveyorController::LCDWaitingForConnection() {
-   lcd.clear();
-   lcd.setCursor(0, 0);
-   lcd.print("Waiting for");
-   lcd.setCursor(0, 1);
-   lcd.print("Hotspot:");
-   delay(1000);
-   lcd.clear();
-   lcd.setCursor(0, 0);
-   lcd.print(this->wifiNetworkName);
-   lcd.setCursor(0, 1);
-   lcd.print(this->wifiNetworkPassword);
-   delay(5000);
-}
-
 
