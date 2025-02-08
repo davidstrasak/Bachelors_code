@@ -5,6 +5,7 @@
 #include <LiquidCrystal_I2C.h>
 #include <WiFiClient.h>
 #include <Wire.h>
+#include "pinDefinitions.h"
 
 // Global variables for WiFi credentials
 const char* wifiNetworkName = "TP-Link_83CA";
@@ -12,9 +13,6 @@ const char* wifiNetworkPassword = "65362280";
 
 // Initialize the web server at port 80
 ESP8266WebServer webServer(80);
-
-// Relay control pin
-#define relayControlPin D6
 
 // Create an LCD instance with address 0x27 for a 16x2 display
 LiquidCrystal_I2C lcd(0x27, 16, 2);
@@ -29,7 +27,7 @@ void mainRoute() {
    response += secondsSinceStart;
    response += " seconds.<br><br>";
    response += "LED status: ";
-   response += digitalRead(relayControlPin);
+   // response += digitalRead(relayControlPin);
    response += "<br><br>";
    response += "<a href=\"/ledON\">Turn LED ON</a><br><br>";
    response += "<a href=\"/ledOFF\">Turn LED OFF</a>";
@@ -54,9 +52,29 @@ void unknownRouteResponse() {
 }
 
 void setup() {
-   // Configure relay pin as output and set it LOW
-   pinMode(relayControlPin, OUTPUT);
-   digitalWrite(relayControlPin, LOW);
+   // Initialize input pins
+   pinMode(PIN_IN_ONOFF, INPUT);
+   pinMode(PIN_IN_INCSPEED, INPUT);
+   pinMode(PIN_IN_SCL, INPUT);
+   pinMode(PIN_IN_SDA, INPUT);
+   pinMode(PIN_IN_DECSPEED, INPUT);
+   pinMode(PIN_IN_LOCALREMOTE, INPUT);
+
+   // Initialize output pins
+   pinMode(PIN_OUT_DECSPEED, OUTPUT);
+   pinMode(PIN_OUT_ONOFF, OUTPUT);
+   pinMode(PIN_OUT_LOCALREMOTE, OUTPUT);
+   pinMode(PIN_OUT_INCSPEED, OUTPUT);
+
+   // Set all output pins to LOW initially
+   digitalWrite(PIN_OUT_DECSPEED, LOW);
+   digitalWrite(PIN_OUT_ONOFF, LOW);
+   digitalWrite(PIN_OUT_LOCALREMOTE, LOW);
+   digitalWrite(PIN_OUT_INCSPEED, LOW);
+
+   // pinMode(relayControlPin, OUTPUT);
+   pinMode(A0, INPUT);
+   // digitalWrite(relayControlPin, LOW);
 
    // Start serial communication
    Serial.begin(115200);
@@ -89,13 +107,13 @@ void setup() {
    });
 
    webServer.on("/ledON", []() {
-      digitalWrite(relayControlPin, HIGH);
+      // digitalWrite(relayControlPin, HIGH);
       Serial.println("Turning LED ON.");
       mainRoute();
    });
 
    webServer.on("/ledOFF", []() {
-      digitalWrite(relayControlPin, LOW);
+      // digitalWrite(relayControlPin, LOW);
       Serial.println("Turning LED OFF.");
       mainRoute();
    });
