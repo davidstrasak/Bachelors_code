@@ -1,0 +1,7 @@
+{
+  "name": "d1mini_code",
+  "version": "1.0.0",
+  "scripts": {
+    "git": "git add . && git commit && git push origin main"
+  }
+}
