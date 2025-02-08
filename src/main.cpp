@@ -9,8 +9,11 @@ void setup() {
    const char* wifiNetworkPassword = "65362280";
 
    conveyorController =
-       new ConveyorController(wifiNetworkName, wifiNetworkPassword);
-   conveyorController->begin();
+      new ConveyorController(wifiNetworkName, wifiNetworkPassword);
+   conveyorController->configIO();
+   conveyorController->configWeb();
+   conveyorController->assignRoutes();
+   conveyorController->startWebServer();
 }
 
 void loop() {

@@ -1,11 +1,13 @@
 #include "ConveyorController.h"
 
 ConveyorController::ConveyorController(const char* wifiNetworkName,
-                                       const char* wifiNetworkPassword)
-    : wifiNetworkName(wifiNetworkName),
-      wifiNetworkPassword(wifiNetworkPassword) {}
+   const char* wifiNetworkPassword)
+   : wifiNetworkName(wifiNetworkName),
+   wifiNetworkPassword(wifiNetworkPassword) {
+}
 
-void ConveyorController::begin() {
+// Public access
+void ConveyorController::configIO() {
    // Initialize input pins
    pinMode(PIN_IN_ONOFF, INPUT);
    pinMode(PIN_IN_INCSPEED, INPUT);
@@ -25,6 +27,9 @@ void ConveyorController::begin() {
    digitalWrite(PIN_OUT_ONOFF, LOW);
    digitalWrite(PIN_OUT_LOCALREMOTE, LOW);
    digitalWrite(PIN_OUT_INCSPEED, LOW);
+}
+
+void ConveyorController::configWeb() {
 
    // Start serial communication
    Serial.begin(115200);
@@ -47,23 +52,27 @@ void ConveyorController::begin() {
    if (MDNS.begin("espwebserver")) {
       Serial.println("MDNS responder started.");
    }
+}
 
+void ConveyorController::assignRoutes() {
    // Assign routes
    webServer.on("/", [this]() { mainRoute(); });
    webServer.on("/example", [this]() {
       String response = "Sample route for multiple pages.";
       webServer.send(200, "text/plain", response);
-   });
+      });
    webServer.on("/ledON", [this]() {
       Serial.println("Turning LED ON.");
       mainRoute();
-   });
+      });
    webServer.on("/ledOFF", [this]() {
       Serial.println("Turning LED OFF.");
       mainRoute();
-   });
+      });
    webServer.onNotFound([this]() { unknownRouteResponse(); });
+}
 
+void ConveyorController::startWebServer() {
    // Start the HTTP server
    webServer.begin();
    Serial.println("HTTP server started.");
@@ -87,6 +96,7 @@ void ConveyorController::updateLCD() {
    delay(200);
 }
 
+// Private access
 void ConveyorController::mainRoute() {
    String secondsSinceStart = String(millis() / 1000);
    String response = "Hello Arduino World!<br>";

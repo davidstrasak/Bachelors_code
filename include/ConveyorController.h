@@ -11,32 +11,36 @@
 #include "pinDefinitions.h"
 
 class ConveyorController {
-  public:
-   ConveyorController(const char* wifiNetworkName,
-                      const char* wifiNetworkPassword);
-   void begin();
-   void handleClient();
-   void updateLCD();
+public:
+  ConveyorController(const char* wifiNetworkName,
+    const char* wifiNetworkPassword);
 
-  private:
-   // WiFi credentials
-   const char* wifiNetworkName;
-   const char* wifiNetworkPassword;
+  void configIO();
+  void configWeb();
+  void assignRoutes();
+  void startWebServer();
+  void handleClient();
+  void updateLCD();
 
-   // Web server
-   ESP8266WebServer webServer = ESP8266WebServer(80);
+private:
+  // WiFi credentials
+  const char* wifiNetworkName;
+  const char* wifiNetworkPassword;
 
-   // LCD
-   LiquidCrystal_I2C lcd = LiquidCrystal_I2C(0x27, 16, 2);
+  // Web server
+  ESP8266WebServer webServer = ESP8266WebServer(80);
 
-   // Counter
-   int counter = 0;
+  // LCD
+  LiquidCrystal_I2C lcd = LiquidCrystal_I2C(0x27, 16, 2);
 
-   // Route handler for the main page
-   void mainRoute();
+  // Counter
+  int counter = 0;
 
-   // Route handler for unknown pages
-   void unknownRouteResponse();
+  // Route handler for the main page
+  void mainRoute();
+
+  // Route handler for unknown pages
+  void unknownRouteResponse();
 };
 
 #endif
