@@ -19,6 +19,7 @@ void setup() {
 }
 
 void loop() {
+   conveyorController->updateState();
    conveyorController->handleClient();
    conveyorController->updateLCD();
    delay(10);

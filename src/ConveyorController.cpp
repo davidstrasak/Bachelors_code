@@ -34,10 +34,7 @@ void ConveyorController::initLCD() {
    lcd.begin(16, 2);
    lcd.init();
    lcd.backlight();
-   lcd.setCursor(0, 0);
-   lcd.print("First line text");
-   lcd.setCursor(0, 1);
-   lcd.print("Second line text");
+   LCDWaitingForConnection();
 }
 
 void ConveyorController::initWeb() {
@@ -52,7 +49,9 @@ void ConveyorController::initWeb() {
    while (WiFi.status() != WL_CONNECTED) {
       delay(500);
       Serial.print(".");
+      LCDWaitingForConnection();
    }
+
    Serial.println("");
    Serial.print("Connected to WiFi network ");
    Serial.println(this->wifiNetworkName);
@@ -63,6 +62,8 @@ void ConveyorController::initWeb() {
    if (MDNS.begin("espwebserver")) {
       Serial.println("MDNS responder started.");
    }
+
+   updateLCD();
 }
 
 void ConveyorController::assignRoutes() {
@@ -87,8 +88,6 @@ void ConveyorController::startWebServer() {
    // Start the HTTP server
    webServer.begin();
    Serial.println("HTTP server started.");
-
-
 }
 
 void ConveyorController::handleClient() { webServer.handleClient(); }
@@ -97,11 +96,26 @@ void ConveyorController::updateLCD() {
    lcd.clear();
    lcd.print(WiFi.localIP());
    lcd.setCursor(0, 1);
-   lcd.print("Counting:");
+   lcd.print("Speed:");
    lcd.setCursor(9, 1);
-   lcd.print(counter);
-   counter++;
+   lcd.print(String(conveyorSpeed) + " %");
+   conveyorSpeed++;
    delay(200);
+}
+
+void ConveyorController::updateState() {
+   // Read the state of the input pins
+   locRemState = digitalRead(PIN_IN_LOCALREMOTE);
+   if (locRemState == HIGH) {
+      onOffState = digitalRead(PIN_IN_ONOFF);
+      incSpeedState = digitalRead(PIN_IN_INCSPEED);
+      decSpeedState = digitalRead(PIN_IN_DECSPEED);
+   }
+   else {
+      onOffState = false;
+      incSpeedState = false;
+      decSpeedState = false;
+   }
 }
 
 // Private access
@@ -133,3 +147,20 @@ void ConveyorController::unknownRouteResponse() {
    }
    webServer.send(404, "text/plain", response);
 }
+
+void ConveyorController::LCDWaitingForConnection() {
+   lcd.clear();
+   lcd.setCursor(0, 0);
+   lcd.print("Waiting for");
+   lcd.setCursor(0, 1);
+   lcd.print("Hotspot:");
+   delay(1000);
+   lcd.clear();
+   lcd.setCursor(0, 0);
+   lcd.print(this->wifiNetworkName);
+   lcd.setCursor(0, 1);
+   lcd.print(this->wifiNetworkPassword);
+   delay(5000);
+}
+
+

@@ -22,6 +22,7 @@ public:
   void startWebServer();
   void handleClient();
   void updateLCD();
+  void updateState();
 
 private:
   // WiFi credentials
@@ -34,14 +35,31 @@ private:
   // LCD
   LiquidCrystal_I2C lcd = LiquidCrystal_I2C(0x27, 16, 2);
 
-  // Counter
-  int counter = 0;
+  // Speed of the conveyor
+  int conveyorSpeed = 0;
+
+  // TRUE or FALSE state if the conveyor is controlled locally or remotely
+  bool locRemState = false;
+
+  // TRUE or FALSE state if the conveyor is speeding up or no
+  bool incSpeedState = false;
+
+  // TRUE or FALSE state if the conveyor is slowing down or no
+  bool decSpeedState = false;
+
+  // TRUE or FALSE state if the conveyor is ON or OFF
+  bool onOffState = false;
 
   // Route handler for the main page
   void mainRoute();
 
   // Route handler for unknown pages
   void unknownRouteResponse();
+
+  void LCDWaitingForConnection();
+
+
+
 };
 
 #endif
