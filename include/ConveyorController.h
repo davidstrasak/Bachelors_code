@@ -7,23 +7,21 @@
 #include <ESP8266mDNS.h>
 #include <LiquidCrystal_I2C.h>
 #include <WiFiClient.h>
-#include <Ticker.h>
+// #include <Wire.h>
 #include "pinDefinitions.h"
+#include <Ticker.h>
 
 class ConveyorController {
 public:
   ConveyorController(const char* wifiNetworkName,
     const char* wifiNetworkPassword);
 
-  // Public access initializations
   void initIO();
   void initLCD();
   void initWeb();
   void assignRoutes();
   void startWebServer();
   void startTicker();
-
-  // Repeatable public access
   void handleClient();
   void updateLCD();
   void updateState();
@@ -34,7 +32,7 @@ private:
   const char* wifiNetworkPassword;
 
   // Web server
-  ESP8266WebServer webServer;
+  ESP8266WebServer webServer = ESP8266WebServer(80);
 
   // LCD
   LiquidCrystal_I2C lcd = LiquidCrystal_I2C(0x27, 16, 2);
@@ -43,31 +41,37 @@ private:
   Ticker inputCheckingTicker;
   Ticker LCDUpdatingTicker;
 
-  // States
-  bool localRemoteState = false;
-  bool locOnOffState = false;
-  bool locIncSpeedState = false;
-  bool locDecSpeedState = false;
-  bool remOnOffState = false;
-  bool remIncSpeedState = false;
-  bool remDecSpeedState = false;
-
-  // Conveyor speed
+  // Speed of the conveyor
   int conveyorSpeed = 0;
 
-  // Private access
-  void LCDWaitingForConnection();
+  // TRUE or FALSE state if the conveyor is controlled locally or remotely
+  // remoteLocalState ? "local" : "remote"
+  bool localRemoteState = false;
+
+  // TRUE or FALSE state if the conveyor is speeding up or no
+  bool locIncSpeedState = false;
+  bool remIncSpeedState = false;
+
+  // TRUE or FALSE state if the conveyor is slowing down or no
+  bool locDecSpeedState = false;
+  bool remDecSpeedState = false;
+
+  // TRUE or FALSE state if the conveyor is ON or OFF
+  bool locOnOffState = false;
+  bool remOnOffState = false;
+
+  // Route handler for the main page
   void mainRoute();
+
+  // Route handler for unknown pages
   void unknownRouteResponse();
-  void handleLocalControl();
-  void handleConveyorOnLocally();
-  void handleConveyorOffLocally();
-  void handleRemoteControl();
-  void handleConveyorOnRemotely();
-  void handleConveyorOffRemotely();
-  void increaseConveyorSpeed();
-  void decreaseConveyorSpeed();
-  void setPinIfDifferent(int pin, int value, bool condition);
+
+  void LCDWaitingForConnection();
+
+  void writeValue(int pin, int value);
+
+
+
 };
 
 #endif

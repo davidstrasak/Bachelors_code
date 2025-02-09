@@ -137,9 +137,9 @@ void ConveyorController::updateState() {
 
    if (localRemoteState) {
       // Local_Controlled
-      if (digitalRead(PIN_OUT_LOCALREMOTE) == LOW) {
-         digitalWrite(PIN_OUT_LOCALREMOTE, HIGH);
-      }
+
+      writeValue(PIN_OUT_LOCALREMOTE, HIGH);
+
       remIncSpeedState = false;
       remDecSpeedState = false;
       remOnOffState = false;
@@ -150,33 +150,33 @@ void ConveyorController::updateState() {
       if (locOnOffState) {
          // Conveyor_On_Locally
          if (locIncSpeedState) {
-            digitalWrite(PIN_OUT_INCSPEED, HIGH);
+            writeValue(PIN_OUT_INCSPEED, HIGH);
             if (conveyorSpeed < 100) {
                conveyorSpeed += 1;
             }
          }
          else {
-            digitalWrite(PIN_OUT_INCSPEED, LOW);
+            writeValue(PIN_OUT_INCSPEED, LOW);
          }
          if (locDecSpeedState) {
-            digitalWrite(PIN_OUT_DECSPEED, HIGH);
+            writeValue(PIN_OUT_DECSPEED, HIGH);
             if (conveyorSpeed > 0) {
                conveyorSpeed -= 1;
             }
          }
          else {
-            digitalWrite(PIN_OUT_DECSPEED, LOW);
+            writeValue(PIN_OUT_DECSPEED, LOW);
          }
          if (locIncSpeedState && locDecSpeedState) {
-            digitalWrite(PIN_OUT_INCSPEED, LOW);
-            digitalWrite(PIN_OUT_DECSPEED, LOW);
+            writeValue(PIN_OUT_INCSPEED, LOW);
+            writeValue(PIN_OUT_DECSPEED, LOW);
          }
       }
       else {
          // Conveyor_Off_Locally
-         digitalWrite(PIN_OUT_INCSPEED, LOW);
-         digitalWrite(PIN_OUT_DECSPEED, LOW);
-         digitalWrite(PIN_OUT_ONOFF, LOW);
+         writeValue(PIN_OUT_INCSPEED, LOW);
+         writeValue(PIN_OUT_DECSPEED, LOW);
+         writeValue(PIN_OUT_ONOFF, LOW);
          if (conveyorSpeed > 0) {
             conveyorSpeed -= 1;
          }
@@ -184,43 +184,41 @@ void ConveyorController::updateState() {
    }
    else {
       // Remote_Controlled
-      if (digitalRead(PIN_OUT_LOCALREMOTE) == HIGH) {
-         digitalWrite(PIN_OUT_LOCALREMOTE, LOW);
-      }
+      writeValue(PIN_OUT_LOCALREMOTE, LOW);
       locIncSpeedState = false;
       locDecSpeedState = false;
       locOnOffState = false;
 
       if (remOnOffState) {
          // Conveyor_On_Remotely
-         digitalWrite(PIN_OUT_ONOFF, HIGH);
+         writeValue(PIN_OUT_ONOFF, HIGH);
          if (remIncSpeedState) {
-            digitalWrite(PIN_OUT_INCSPEED, HIGH);
+            writeValue(PIN_OUT_INCSPEED, HIGH);
             if (conveyorSpeed < 100) {
                conveyorSpeed += 1;
             }
          }
          else {
-            digitalWrite(PIN_OUT_INCSPEED, LOW);
+            writeValue(PIN_OUT_INCSPEED, LOW);
          }
          if (remDecSpeedState) {
-            digitalWrite(PIN_OUT_DECSPEED, HIGH);
+            writeValue(PIN_OUT_DECSPEED, HIGH);
             if (conveyorSpeed > 0) {
                conveyorSpeed -= 1;
             }
          }
          else {
-            digitalWrite(PIN_OUT_DECSPEED, LOW);
+            writeValue(PIN_OUT_DECSPEED, LOW);
          }
          if (remIncSpeedState && remDecSpeedState) {
-            digitalWrite(PIN_OUT_INCSPEED, LOW);
-            digitalWrite(PIN_OUT_DECSPEED, LOW);
+            writeValue(PIN_OUT_INCSPEED, LOW);
+            writeValue(PIN_OUT_DECSPEED, LOW);
          }
       }
       else {
-         digitalWrite(PIN_OUT_ONOFF, LOW);
-         digitalWrite(PIN_OUT_INCSPEED, LOW);
-         digitalWrite(PIN_OUT_DECSPEED, LOW);
+         writeValue(PIN_OUT_ONOFF, LOW);
+         writeValue(PIN_OUT_INCSPEED, LOW);
+         writeValue(PIN_OUT_DECSPEED, LOW);
          if (conveyorSpeed > 0) {
             conveyorSpeed -= 1;
          }
@@ -292,3 +290,8 @@ void ConveyorController::unknownRouteResponse() {
    webServer.send(404, "text/plain", response);
 }
 
+void ConveyorController::writeValue(int pin, int value) {
+   if (digitalRead(pin) != value) {
+      digitalWrite(pin, value);
+   }
+}
