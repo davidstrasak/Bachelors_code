@@ -251,7 +251,7 @@ void ConveyorController::mainRoute() {
    response += secondsSinceStart;
    response += " seconds.</p>";
    response += "<p>Local/Remote status: ";
-   response += (remoteLocalState) ? "Local" : "Remote";
+   response += (remoteLocalState) ? "Remote" : "Local";
    response += "</p>";
    response += "<div style=\"display: grid; grid-template-columns: repeat(2, 200px); grid-gap: 10px;\">\n";
    response += "<div style=\"padding: 10px; text-align: center;\">\n";
