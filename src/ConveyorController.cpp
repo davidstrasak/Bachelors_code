@@ -137,12 +137,24 @@ void ConveyorController::updateLCD() {
 
 void ConveyorController::updateState() {
    // Read the state of the input pins
+
+   // docasne okomentovano abych to mohl udelat dle stavoveho diagramu
+
    localRemoteState = (digitalRead(PIN_IN_LOCALREMOTE) == HIGH);
-   if (localRemoteState) {
-      locOnOffState = (digitalRead(PIN_IN_ONOFF) == HIGH);
-      locIncSpeedState = (digitalRead(PIN_IN_INCSPEED) == HIGH);
-      locDecSpeedState = (digitalRead(PIN_IN_DECSPEED) == HIGH);
-   }
+
+   // if (localRemoteState) {
+   //    if (digitalRead(PIN_OUT_LOCALREMOTE) == LOW) {
+   //       digitalWrite(PIN_OUT_LOCALREMOTE, HIGH);
+   //    }
+   //    locOnOffState = (digitalRead(PIN_IN_ONOFF) == HIGH);
+   //    locIncSpeedState = (digitalRead(PIN_IN_INCSPEED) == HIGH);
+   //    locDecSpeedState = (digitalRead(PIN_IN_DECSPEED) == HIGH);
+   // }
+   // else {
+   //    if (digitalRead(PIN_OUT_LOCALREMOTE) == HIGH) {
+   //       digitalWrite(PIN_OUT_LOCALREMOTE, LOW);
+   //    }
+   // }
 }
 
 // Private access
@@ -163,19 +175,33 @@ void ConveyorController::LCDWaitingForConnection() {
 
 void ConveyorController::mainRoute() {
    String secondsSinceStart = String(millis() / 1000);
-   String response = "Hello Arduino World!<br>";
-   response += "<br>Time since Arduino started: ";
+   String response = "<p>Hello Arduino World!</p>";
+   response += "<p>Time since Arduino started:";
    response += secondsSinceStart;
-   response += " seconds.<br/><br/>";
-   response += "Local/Remote status: ";
+   response += " seconds.</p>";
+   response += "<p>Local/Remote status: ";
    response += (localRemoteState) ? "Local" : "Remote";
-   response += "<br/><br/>";
-   response += "<a href=\"/incSpeedOn\">Turn inc. speed ON</a>";
-   response += "<a href=\"/incSpeedOff\">Turn inc. speed OFF</a><br/><br/>";
-   response += "<a href=\"/decSpeedOn\">Turn dec. speed ON</a>";
-   response += "<a href=\"/decSpeedOff\">Turn dec. speed OFF</a><br/><br/>";
-   response += "<a href=\"/conveyorOn\">Turn conveyor ON</a>";
-   response += "<a href=\"/conveyorOff\">Turn conveyor OFF</a><br/><br/>";
+   response += "</p>";
+   response += "<div style=\"display: grid; grid-template-columns: repeat(2, 200px); grid-gap: 10px;\">\n";
+   response += "<div style=\"padding: 10px; text-align: center;\">\n";
+   response += "<a href=\"/incSpeedOn\">Turn inc. speed ON</a>\n";
+   response += "</div>\n";
+   response += "<div style=\"padding: 10px; text-align: center;\">\n";
+   response += "<a href=\"/incSpeedOff\">Turn inc. speed OFF</a>\n";
+   response += "</div>\n";
+   response += "<div style=\"padding: 10px; text-align: center;\">\n";
+   response += "<a href=\"/decSpeedOn\">Turn dec. speed ON</a>\n";
+   response += "</div>\n";
+   response += "<div style=\"padding: 10px; text-align: center;\">\n";
+   response += "<a href=\"/decSpeedOff\">Turn dec. speed OFF</a>\n";
+   response += "</div>\n";
+   response += "<div style=\"padding: 10px; text-align: center;\">\n";
+   response += "<a href=\"/conveyorOn\">Turn conveyor ON</a>\n";
+   response += "</div>\n";
+   response += "<div style=\"padding: 10px; text-align: center;\">\n";
+   response += "<a href=\"/conveyorOff\">Turn conveyor OFF</a>\n";
+   response += "</div>\n";
+   response += "</div>\n";
 
    webServer.send(200, "text/html", response);
 }
