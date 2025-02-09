@@ -6,7 +6,7 @@ ConveyorController::ConveyorController(const char* wifiNetworkName,
    wifiNetworkPassword(wifiNetworkPassword) {
 }
 
-// Public access
+// Public access initializations
 void ConveyorController::initIO() {
    // Initialize input pins
    pinMode(PIN_IN_ONOFF, INPUT);
@@ -74,9 +74,7 @@ void ConveyorController::assignRoutes() {
       });
    webServer.on("/incSpeedOn", [this]() {
       Serial.println("Increasing speed button pressed");
-      if (!localRemoteState) {
-         digitalWrite(PIN_OUT_INCSPEED, HIGH);
-      };
+      digitalWrite(PIN_OUT_INCSPEED, HIGH);
       mainRoute();
       });
    webServer.on("/incSpeedOff", [this]() {
@@ -86,9 +84,7 @@ void ConveyorController::assignRoutes() {
       });
    webServer.on("/decSpeedOn", [this]() {
       Serial.println("Decreasing speed button pressed");
-      if (!localRemoteState) {
-         digitalWrite(PIN_OUT_DECSPEED, HIGH);
-      };
+      digitalWrite(PIN_OUT_DECSPEED, HIGH);
       mainRoute();
       });
    webServer.on("/decSpeedOff", [this]() {
@@ -98,9 +94,7 @@ void ConveyorController::assignRoutes() {
       });
    webServer.on("/conveyorOn", [this]() {
       Serial.println("Conveyor turned ON");
-      if (!localRemoteState) {
-         digitalWrite(PIN_OUT_ONOFF, HIGH);
-      };
+      digitalWrite(PIN_OUT_ONOFF, HIGH);
       mainRoute();
       });
    webServer.on("/conveyorOff", [this]() {
@@ -136,25 +130,14 @@ void ConveyorController::updateLCD() {
 }
 
 void ConveyorController::updateState() {
-   // Read the state of the input pins
-
-   // docasne okomentovano abych to mohl udelat dle stavoveho diagramu
-
    localRemoteState = (digitalRead(PIN_IN_LOCALREMOTE) == HIGH);
 
-   // if (localRemoteState) {
-   //    if (digitalRead(PIN_OUT_LOCALREMOTE) == LOW) {
-   //       digitalWrite(PIN_OUT_LOCALREMOTE, HIGH);
-   //    }
-   //    locOnOffState = (digitalRead(PIN_IN_ONOFF) == HIGH);
-   //    locIncSpeedState = (digitalRead(PIN_IN_INCSPEED) == HIGH);
-   //    locDecSpeedState = (digitalRead(PIN_IN_DECSPEED) == HIGH);
-   // }
-   // else {
-   //    if (digitalRead(PIN_OUT_LOCALREMOTE) == HIGH) {
-   //       digitalWrite(PIN_OUT_LOCALREMOTE, LOW);
-   //    }
-   // }
+   if (localRemoteState) {
+      handleLocalControl();
+   }
+   else {
+      handleRemoteControl();
+   }
 }
 
 // Private access
@@ -221,3 +204,96 @@ void ConveyorController::unknownRouteResponse() {
    webServer.send(404, "text/plain", response);
 }
 
+void ConveyorController::handleLocalControl() {
+   setPinIfDifferent(PIN_OUT_LOCALREMOTE, HIGH, digitalRead(PIN_OUT_LOCALREMOTE) == LOW);
+
+   remIncSpeedState = false;
+   remDecSpeedState = false;
+   remOnOffState = false;
+
+   locOnOffState = (digitalRead(PIN_IN_ONOFF) == HIGH);
+   locIncSpeedState = (digitalRead(PIN_IN_INCSPEED) == HIGH);
+   locDecSpeedState = (digitalRead(PIN_IN_DECSPEED) == HIGH);
+
+   if (locOnOffState) {
+      handleConveyorOnLocally();
+   }
+   else {
+      handleConveyorOffLocally();
+   }
+}
+
+void ConveyorController::handleConveyorOnLocally() {
+   setPinIfDifferent(PIN_OUT_INCSPEED, HIGH, locIncSpeedState);
+   increaseConveyorSpeed();
+
+   setPinIfDifferent(PIN_OUT_DECSPEED, HIGH, locDecSpeedState);
+   decreaseConveyorSpeed();
+
+   if (locIncSpeedState && locDecSpeedState) {
+      digitalWrite(PIN_OUT_INCSPEED, LOW);
+      digitalWrite(PIN_OUT_DECSPEED, LOW);
+   }
+}
+
+void ConveyorController::handleConveyorOffLocally() {
+   setPinIfDifferent(PIN_OUT_INCSPEED, LOW, digitalRead(PIN_OUT_INCSPEED) == HIGH);
+   setPinIfDifferent(PIN_OUT_DECSPEED, LOW, digitalRead(PIN_OUT_DECSPEED) == HIGH);
+   setPinIfDifferent(PIN_OUT_ONOFF, LOW, digitalRead(PIN_OUT_ONOFF) == HIGH);
+   decreaseConveyorSpeed();
+}
+
+void ConveyorController::handleRemoteControl() {
+   setPinIfDifferent(PIN_OUT_LOCALREMOTE, LOW, digitalRead(PIN_OUT_LOCALREMOTE) == HIGH);
+
+   locIncSpeedState = false;
+   locDecSpeedState = false;
+   locOnOffState = false;
+
+   if (remOnOffState) {
+      handleConveyorOnRemotely();
+   }
+   else {
+      handleConveyorOffRemotely();
+   }
+}
+
+void ConveyorController::handleConveyorOnRemotely() {
+   setPinIfDifferent(PIN_OUT_ONOFF, HIGH, digitalRead(PIN_OUT_ONOFF) == LOW);
+
+   setPinIfDifferent(PIN_OUT_INCSPEED, HIGH, remIncSpeedState);
+   increaseConveyorSpeed();
+
+   setPinIfDifferent(PIN_OUT_DECSPEED, HIGH, remDecSpeedState);
+   decreaseConveyorSpeed();
+
+   if (remIncSpeedState && remDecSpeedState) {
+      digitalWrite(PIN_OUT_INCSPEED, LOW);
+      digitalWrite(PIN_OUT_DECSPEED, LOW);
+   }
+}
+
+void ConveyorController::handleConveyorOffRemotely() {
+   setPinIfDifferent(PIN_OUT_ONOFF, LOW, digitalRead(PIN_OUT_ONOFF) == HIGH);
+   setPinIfDifferent(PIN_OUT_INCSPEED, LOW, digitalRead(PIN_OUT_INCSPEED) == HIGH);
+   setPinIfDifferent(PIN_OUT_DECSPEED, LOW, digitalRead(PIN_OUT_DECSPEED) == HIGH);
+   decreaseConveyorSpeed();
+}
+
+void ConveyorController::increaseConveyorSpeed() {
+   if (conveyorSpeed < 100) {
+      conveyorSpeed += 1;
+   }
+}
+
+void ConveyorController::decreaseConveyorSpeed() {
+   if (conveyorSpeed > 0) {
+      conveyorSpeed -= 1;
+   }
+}
+
+void ConveyorController::setPinIfDifferent(int pin, int value, bool condition) {
+   if (condition) {
+      digitalWrite(pin, value);
+   }
+}
