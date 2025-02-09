@@ -66,7 +66,7 @@ private:
   // Route handler for unknown pages
   void unknownRouteResponse();
 
-  void LCDWaitingForConnection();
+  void LCDWaitingForConnection(bool condition);
 
   void writeValue(int pin, int value);
 

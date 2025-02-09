@@ -44,11 +44,12 @@ void ConveyorController::initWeb() {
    // Start WiFi communication with credentials
    WiFi.begin(wifiNetworkName, wifiNetworkPassword);
 
+   int i = 0;
    // Wait until connected to the network, printing dots
    while (WiFi.status() != WL_CONNECTED) {
-      delay(500);
       Serial.print(".");
-      LCDWaitingForConnection();
+      LCDWaitingForConnection(i % 2 == 0);
+      delay(1000);
    }
 
    Serial.println("");
@@ -167,6 +168,7 @@ void ConveyorController::updateState() {
          }
       }
       else {
+         // Conveyor_Off_Remotely
          writeValue(PIN_OUT_ONOFF, LOW);
          writeValue(PIN_OUT_INCSPEED, LOW);
          writeValue(PIN_OUT_DECSPEED, LOW);
@@ -225,19 +227,21 @@ void ConveyorController::updateState() {
 }
 
 // Private access
-void ConveyorController::LCDWaitingForConnection() {
-   lcd.clear();
-   lcd.setCursor(0, 0);
-   lcd.print("Waiting for");
-   lcd.setCursor(0, 1);
-   lcd.print("Hotspot:");
-   delay(1000);
-   lcd.clear();
-   lcd.setCursor(0, 0);
-   lcd.print(this->wifiNetworkName);
-   lcd.setCursor(0, 1);
-   lcd.print(this->wifiNetworkPassword);
-   delay(1000);
+void ConveyorController::LCDWaitingForConnection(bool condition) {
+   if (condition) {
+      lcd.clear();
+      lcd.setCursor(0, 0);
+      lcd.print("Waiting for");
+      lcd.setCursor(0, 1);
+      lcd.print("Hotspot:");
+   }
+   else {
+      lcd.clear();
+      lcd.setCursor(0, 0);
+      lcd.print(this->wifiNetworkName);
+      lcd.setCursor(0, 1);
+      lcd.print(this->wifiNetworkPassword);
+   }
 }
 
 void ConveyorController::mainRoute() {
