@@ -131,11 +131,51 @@ void ConveyorController::updateLCD() {
 
 void ConveyorController::updateState() {
    // This is the main logic of the system, as defined by the stateflow diagram
+   remoteLocalState = (digitalRead(PIN_IN_LOCALREMOTE) == LOW);
 
-   // Start
-   localRemoteState = (digitalRead(PIN_IN_LOCALREMOTE) == HIGH);
+   if (remoteLocalState) {
+      // Remote_Controlled
+      writeValue(PIN_OUT_LOCALREMOTE, LOW);
+      locIncSpeedState = false;
+      locDecSpeedState = false;
+      locOnOffState = false;
 
-   if (localRemoteState) {
+      if (remOnOffState) {
+         // Conveyor_On_Remotely
+         writeValue(PIN_OUT_ONOFF, HIGH);
+         if (remIncSpeedState) {
+            writeValue(PIN_OUT_INCSPEED, HIGH);
+            if (conveyorSpeed < 100) {
+               conveyorSpeed += 1;
+            }
+         }
+         else {
+            writeValue(PIN_OUT_INCSPEED, LOW);
+         }
+         if (remDecSpeedState) {
+            writeValue(PIN_OUT_DECSPEED, HIGH);
+            if (conveyorSpeed > 0) {
+               conveyorSpeed -= 1;
+            }
+         }
+         else {
+            writeValue(PIN_OUT_DECSPEED, LOW);
+         }
+         if (remIncSpeedState && remDecSpeedState) {
+            writeValue(PIN_OUT_INCSPEED, LOW);
+            writeValue(PIN_OUT_DECSPEED, LOW);
+         }
+      }
+      else {
+         writeValue(PIN_OUT_ONOFF, LOW);
+         writeValue(PIN_OUT_INCSPEED, LOW);
+         writeValue(PIN_OUT_DECSPEED, LOW);
+         if (conveyorSpeed > 0) {
+            conveyorSpeed -= 1;
+         }
+      }
+   }
+   else {
       // Local_Controlled
 
       writeValue(PIN_OUT_LOCALREMOTE, HIGH);
@@ -182,48 +222,6 @@ void ConveyorController::updateState() {
          }
       }
    }
-   else {
-      // Remote_Controlled
-      writeValue(PIN_OUT_LOCALREMOTE, LOW);
-      locIncSpeedState = false;
-      locDecSpeedState = false;
-      locOnOffState = false;
-
-      if (remOnOffState) {
-         // Conveyor_On_Remotely
-         writeValue(PIN_OUT_ONOFF, HIGH);
-         if (remIncSpeedState) {
-            writeValue(PIN_OUT_INCSPEED, HIGH);
-            if (conveyorSpeed < 100) {
-               conveyorSpeed += 1;
-            }
-         }
-         else {
-            writeValue(PIN_OUT_INCSPEED, LOW);
-         }
-         if (remDecSpeedState) {
-            writeValue(PIN_OUT_DECSPEED, HIGH);
-            if (conveyorSpeed > 0) {
-               conveyorSpeed -= 1;
-            }
-         }
-         else {
-            writeValue(PIN_OUT_DECSPEED, LOW);
-         }
-         if (remIncSpeedState && remDecSpeedState) {
-            writeValue(PIN_OUT_INCSPEED, LOW);
-            writeValue(PIN_OUT_DECSPEED, LOW);
-         }
-      }
-      else {
-         writeValue(PIN_OUT_ONOFF, LOW);
-         writeValue(PIN_OUT_INCSPEED, LOW);
-         writeValue(PIN_OUT_DECSPEED, LOW);
-         if (conveyorSpeed > 0) {
-            conveyorSpeed -= 1;
-         }
-      }
-   }
 }
 
 // Private access
@@ -249,7 +247,7 @@ void ConveyorController::mainRoute() {
    response += secondsSinceStart;
    response += " seconds.</p>";
    response += "<p>Local/Remote status: ";
-   response += (localRemoteState) ? "Local" : "Remote";
+   response += (remoteLocalState) ? "Local" : "Remote";
    response += "</p>";
    response += "<div style=\"display: grid; grid-template-columns: repeat(2, 200px); grid-gap: 10px;\">\n";
    response += "<div style=\"padding: 10px; text-align: center;\">\n";

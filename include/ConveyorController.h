@@ -46,7 +46,7 @@ private:
 
   // TRUE or FALSE state if the conveyor is controlled locally or remotely
   // remoteLocalState ? "local" : "remote"
-  bool localRemoteState = false;
+  bool remoteLocalState = false;
 
   // TRUE or FALSE state if the conveyor is speeding up or no
   bool locIncSpeedState = false;
