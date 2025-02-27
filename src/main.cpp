@@ -5,8 +5,8 @@
 ConveyorController* conveyorController;
 
 void setup() {
-   const char* wifiNetworkName = "D1miniHotspot";
-   const char* wifiNetworkPassword = "12345678910";
+   const char* wifiNetworkName = "TP-Link_83CA";
+   const char* wifiNetworkPassword = "65362280";
 
    conveyorController =
       new ConveyorController(wifiNetworkName, wifiNetworkPassword);

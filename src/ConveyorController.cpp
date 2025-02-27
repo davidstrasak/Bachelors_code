@@ -75,32 +75,32 @@ void ConveyorController::assignRoutes() {
       });
    webServer.on("/incSpeedOn", [this]() {
       Serial.println("Increasing speed button pressed");
-      digitalWrite(PIN_OUT_INCSPEED, HIGH);
+      remIncSpeedState = true;
       mainRoute();
       });
    webServer.on("/incSpeedOff", [this]() {
       Serial.println("Increasing speed button released");
-      digitalWrite(PIN_OUT_INCSPEED, LOW);
+      remIncSpeedState = false;
       mainRoute();
       });
    webServer.on("/decSpeedOn", [this]() {
       Serial.println("Decreasing speed button pressed");
-      digitalWrite(PIN_OUT_DECSPEED, HIGH);
+      remDecSpeedState = true;
       mainRoute();
       });
    webServer.on("/decSpeedOff", [this]() {
       Serial.println("Decreasing speed button released");
-      digitalWrite(PIN_OUT_DECSPEED, LOW);
+      remDecSpeedState = false;
       mainRoute();
       });
    webServer.on("/conveyorOn", [this]() {
       Serial.println("Conveyor turned ON");
-      digitalWrite(PIN_OUT_ONOFF, HIGH);
+      remOnOffState = true;
       mainRoute();
       });
    webServer.on("/conveyorOff", [this]() {
       Serial.println("Conveyor turned OFF");
-      digitalWrite(PIN_OUT_ONOFF, LOW);
+      remOnOffState = false;
       mainRoute();
       });
    webServer.onNotFound([this]() { unknownRouteResponse(); });
@@ -132,7 +132,7 @@ void ConveyorController::updateLCD() {
 
 void ConveyorController::updateState() {
    // This is the main logic of the system, as defined by the stateflow diagram
-   remoteLocalState = (digitalRead(PIN_IN_LOCALREMOTE) == LOW);
+   remoteLocalState = (digitalRead(PIN_IN_LOCALREMOTE) == HIGH);
 
    if (remoteLocalState) {
       // Remote_Controlled
