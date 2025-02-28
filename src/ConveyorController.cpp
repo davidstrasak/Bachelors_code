@@ -132,7 +132,7 @@ void ConveyorController::updateLCD() {
 
 void ConveyorController::updateState() {
    // This is the main logic of the system, as defined by the stateflow diagram
-   remoteLocalState = (digitalRead(PIN_IN_LOCALREMOTE) == HIGH);
+   remoteLocalState = (digitalRead(PIN_IN_LOCALREMOTE) == LOW);
 
    if (remoteLocalState) {
       // Remote_Controlled
