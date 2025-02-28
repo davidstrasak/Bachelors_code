@@ -113,8 +113,8 @@ void ConveyorController::startWebServer() {
 }
 
 void ConveyorController::startTicker() {
-   inputCheckingTicker.attach(0.1, [this]() { updateState(); });
-   LCDUpdatingTicker.attach(0.3, [this]() { updateLCD(); });
+   inputCheckingTicker.attach(0.3, [this]() { updateState(); });
+   LCDUpdatingTicker.attach(0.673, [this]() { updateLCD(); });
 }
 
 // Repeatable public access
