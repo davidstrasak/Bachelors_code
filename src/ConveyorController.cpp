@@ -68,6 +68,9 @@ void ConveyorController::initWeb() {
 
 void ConveyorController::assignRoutes() {
    // Assign routes
+   webServer.sendHeader("Access-Control-Allow-Origin", "*"); // Allow all origins
+   webServer.sendHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+   webServer.sendHeader("Access-Control-Allow-Headers", "Content-Type");
    webServer.on("/", [this]() { mainRoute(); });
    webServer.on("/example", [this]() {
       String response = "Sample route for multiple pages.";
