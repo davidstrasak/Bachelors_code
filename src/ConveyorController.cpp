@@ -68,40 +68,67 @@ void ConveyorController::initWeb() {
 
 void ConveyorController::assignRoutes() {
    // Assign routes
-   webServer.sendHeader("Access-Control-Allow-Origin", "*"); // Allow all origins
-   webServer.sendHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
-   webServer.sendHeader("Access-Control-Allow-Headers", "Content-Type");
-   webServer.on("/", [this]() { mainRoute(); });
+   webServer.on("/", [this]() {
+      webServer.sendHeader("Access-Control-Allow-Origin", "*"); // Allow all origins
+      webServer.sendHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+      webServer.sendHeader("Access-Control-Allow-Headers", "Content-Type");
+      mainRoute(); });
+   webServer.on("/getData", [this] {
+      webServer.sendHeader("Access-Control-Allow-Origin", "*"); // Allow all origins
+      webServer.sendHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+      webServer.sendHeader("Access-Control-Allow-Headers", "Content-Type");
+      webServer.sendHeader("Content-Type", "application/json");
+      String json = "{\"pinState\": 1, \"temperature\": 25.5}";
+      webServer.send(200, "application/json", json);
+      });
    webServer.on("/example", [this]() {
       String response = "Sample route for multiple pages.";
       webServer.send(200, "text/plain", response);
       });
    webServer.on("/incSpeedOn", [this]() {
+      webServer.sendHeader("Access-Control-Allow-Origin", "*"); // Allow all origins
+      webServer.sendHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+      webServer.sendHeader("Access-Control-Allow-Headers", "Content-Type");
       Serial.println("Increasing speed button pressed");
       remIncSpeedState = true;
       mainRoute();
       });
    webServer.on("/incSpeedOff", [this]() {
+      webServer.sendHeader("Access-Control-Allow-Origin", "*"); // Allow all origins
+      webServer.sendHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+      webServer.sendHeader("Access-Control-Allow-Headers", "Content-Type");
       Serial.println("Increasing speed button released");
       remIncSpeedState = false;
       mainRoute();
       });
    webServer.on("/decSpeedOn", [this]() {
+      webServer.sendHeader("Access-Control-Allow-Origin", "*"); // Allow all origins
+      webServer.sendHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+      webServer.sendHeader("Access-Control-Allow-Headers", "Content-Type");
       Serial.println("Decreasing speed button pressed");
       remDecSpeedState = true;
       mainRoute();
       });
    webServer.on("/decSpeedOff", [this]() {
+      webServer.sendHeader("Access-Control-Allow-Origin", "*"); // Allow all origins
+      webServer.sendHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+      webServer.sendHeader("Access-Control-Allow-Headers", "Content-Type");
       Serial.println("Decreasing speed button released");
       remDecSpeedState = false;
       mainRoute();
       });
    webServer.on("/conveyorOn", [this]() {
+      webServer.sendHeader("Access-Control-Allow-Origin", "*"); // Allow all origins
+      webServer.sendHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+      webServer.sendHeader("Access-Control-Allow-Headers", "Content-Type");
       Serial.println("Conveyor turned ON");
       remOnOffState = true;
       mainRoute();
       });
    webServer.on("/conveyorOff", [this]() {
+      webServer.sendHeader("Access-Control-Allow-Origin", "*"); // Allow all origins
+      webServer.sendHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+      webServer.sendHeader("Access-Control-Allow-Headers", "Content-Type");
       Serial.println("Conveyor turned OFF");
       remOnOffState = false;
       mainRoute();
