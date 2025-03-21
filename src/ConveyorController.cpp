@@ -78,7 +78,8 @@ void ConveyorController::assignRoutes() {
       webServer.sendHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
       webServer.sendHeader("Access-Control-Allow-Headers", "Content-Type");
       webServer.sendHeader("Content-Type", "application/json");
-      String json = "{\"pinState\": 1, \"temperature\": 25.5}";
+      String json = "{\"conveyorSpeed\": " + String(conveyorSpeed) +
+         ", \"localRemote\": \"" + ((remoteLocalState) ? "Remote" : "Local") + "\"}";
       webServer.send(200, "application/json", json);
       });
    webServer.on("/example", [this]() {
