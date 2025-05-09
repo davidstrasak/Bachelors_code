@@ -1,4 +1,3 @@
-#include <Arduino.h>
 #include "ConveyorController.h"
 
 // Global instance of the controller

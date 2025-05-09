@@ -7,7 +7,6 @@
 #include <ESP8266mDNS.h>
 #include <LiquidCrystal_I2C.h>
 #include <WiFiClient.h>
-// #include <Wire.h>
 #include "pinDefinitions.h"
 #include <Ticker.h>
 
@@ -69,9 +68,6 @@ private:
   void LCDWaitingForConnection(bool condition);
 
   void writeValue(int pin, int value);
-
-
-
 };
 
 #endif
